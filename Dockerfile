@@ -56,7 +56,8 @@ RUN apk add --update --no-cache \
     openjdk8-jre \
     unzip \
     util-linux \
-    wget 
+    wget \
+    libc6-compat
 
 # Download and install keptn cli
 RUN curl -LO https://github.com/keptn/keptn/releases/download/${KEPTN_VERSION}/${KEPTN_VERSION}_keptn-linux.tar && \
@@ -83,6 +84,8 @@ RUN rm -rf /var/cache/apk/* \
 
 #Install DT Monitoring as Code
 COPY self-monitoring-1.1.0 /usr/bin/mac
+
+RUN chmod +x /usr/bin/mac
 
 ENV PATH $PATH:$JMETER_BIN
 
