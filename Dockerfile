@@ -82,10 +82,12 @@ RUN rm -rf /var/cache/apk/* \
     && tar -xzf /tmp/dependencies/apache-jmeter-${JMETER_VERSION}.tgz -C /opt  \
     && rm -rf /tmp/dependencies
 
-#Install DT Monitoring as Code
-COPY self-monitoring-1.1.0 /usr/bin/mac
+RUN mkdir /dynatrace
 
-RUN chmod +x /usr/bin/mac
+#Install DT Monitoring as Code
+COPY self-monitoring-1.0.0 /dynatrace/self-monitoring-1.0.0
+
+RUN chmod +x /dynatrace/self-monitoring-1.0.0 && cp /dynatrace/self-monitoring-1.0.0 /usr/bin/mac
 
 ENV PATH $PATH:$JMETER_BIN
 
