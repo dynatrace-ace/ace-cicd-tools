@@ -82,8 +82,7 @@ RUN rm -rf /var/cache/apk/* \
     && rm -rf /tmp/dependencies
 
 #Install DT Monitoring as Code
-COPY self-monitoring-1.1.0 /usr/local/bin/self-monitoring
-RUN chmod +x /usr/local/bin/self-monitoring
+COPY self-monitoring-1.1.0 /usr/bin/mac
 
 ENV PATH $PATH:$JMETER_BIN
 
