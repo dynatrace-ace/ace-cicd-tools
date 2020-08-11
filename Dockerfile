@@ -1,5 +1,5 @@
 FROM alpine:latest
-LABEL version="1.0" maintainer="Dynatrace ACE team <ace@dynatrace.com>"
+LABEL version="1.0" maintainer="Dynatrace ACE team<ace@dynatrace.com>"
 
 
 ARG JMETER_VERSION="5.2.1"
