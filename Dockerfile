@@ -1,17 +1,18 @@
 FROM alpine:latest
-LABEL version="1.0" maintainer="Dynatrace ACE team<ace@dynatrace.com>"
+LABEL version="1.1" maintainer="Dynatrace ACE team<ace@dynatrace.com>"
 
 
 ARG JMETER_VERSION="5.2.1"
 ARG HELM_VERSION="3.2.4"
 ARG KEPTN_VERSION="0.7.0"
 ARG YQ_VERSION="3.3.2"
+ARG MAC_VERSION="1.2.1"
 ENV HELM_BASE_URL https://get.helm.sh
 ENV HELM_TAR_FILE helm-${HELM_VERSION}-linux-amd64.tar.gz
 ENV JMETER_HOME /opt/apache-jmeter-${JMETER_VERSION}
 ENV	JMETER_BIN	${JMETER_HOME}/bin
 ENV	JMETER_DOWNLOAD_URL  https://archive.apache.org/dist/jmeter/binaries/apache-jmeter-${JMETER_VERSION}.tgz
-
+ENV MAC_EXEC self-monitoring-${MAC_VERSION}
 
 # Installing tools and adding helm
 # RUN apk add --update --no-cache \
@@ -85,9 +86,9 @@ RUN rm -rf /var/cache/apk/* \
 RUN mkdir /dynatrace
 
 #Install DT Monitoring as Code
-COPY self-monitoring-1.0.0 /dynatrace/self-monitoring-1.0.0
+COPY ${MAC_EXEC} /dynatrace/${MAC_EXEC}
 
-RUN chmod +x /dynatrace/self-monitoring-1.0.0 && cp /dynatrace/self-monitoring-1.0.0 /usr/bin/mac
+RUN chmod +x /dynatrace/${MAC_EXEC} && cp /dynatrace/${MAC_EXEC} /usr/bin/mac
 
 ENV PATH $PATH:$JMETER_BIN
 
