@@ -4,7 +4,7 @@ LABEL version="1.1" maintainer="Dynatrace ACE team<ace@dynatrace.com>"
 
 ARG JMETER_VERSION="5.2.1"
 ARG HELM_VERSION="3.2.4"
-ARG KEPTN_VERSION="0.7.0"
+ARG KEPTN_VERSION="0.7.1"
 ARG YQ_VERSION="3.3.2"
 ARG MAC_VERSION="1.3.0"
 ENV HELM_BASE_URL https://get.helm.sh
