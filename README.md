@@ -6,4 +6,4 @@ It has the following key tools:
 - Helm 3.2.4
 - Jmeter 5.2.1
 - YQ 3.3.2
-- Dynatrace Monitoring as Code 1.3.0 toolset available as 'mac' command
+- Dynatrace Monitoring as Code 1.4.1 toolset available as 'mac' command
