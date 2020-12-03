@@ -6,13 +6,14 @@ ARG JMETER_VERSION="5.2.1"
 ARG HELM_VERSION="3.2.4"
 ARG KEPTN_VERSION="0.7.2"
 ARG YQ_VERSION="3.3.2"
-ARG MAC_VERSION="1.4.1"
+ARG MAC_VERSION="v1.0.1"
 ENV HELM_BASE_URL https://get.helm.sh
 ENV HELM_TAR_FILE helm-${HELM_VERSION}-linux-amd64.tar.gz
 ENV JMETER_HOME /opt/apache-jmeter-${JMETER_VERSION}
 ENV	JMETER_BIN	${JMETER_HOME}/bin
 ENV	JMETER_DOWNLOAD_URL  https://archive.apache.org/dist/jmeter/binaries/apache-jmeter-${JMETER_VERSION}.tgz
 ENV MAC_EXEC self-monitoring-${MAC_VERSION}
+ENV MONACO_DOWNLOAD_URL=https://github.com/dynatrace-oss/dynatrace-monitoring-as-code/releases/download/${MAC_VERSION}/monaco-linux-amd64
 
 # Installing tools and adding helm
 # RUN apk add --update --no-cache \
@@ -85,10 +86,10 @@ RUN rm -rf /var/cache/apk/* \
 
 RUN mkdir /dynatrace
 
-#Install DT Monitoring as Code
-COPY ${MAC_EXEC} /dynatrace/${MAC_EXEC}
+#Install DT Monitoring as Code - Monaco
+RUN curl -sL ${MONACO_DOWNLOAD_URL} -o /usr/bin/monaco
+RUN chmod +x /usr/bin/monaco
 
-RUN chmod +x /dynatrace/${MAC_EXEC} && cp /dynatrace/${MAC_EXEC} /usr/bin/mac
 
 ENV PATH $PATH:$JMETER_BIN
 
