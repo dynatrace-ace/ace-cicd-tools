@@ -6,4 +6,4 @@ It has the following key tools:
 - Helm 3.2.4
 - Jmeter 5.2.1
 - YQ 3.3.2
-- Dynatrace Monaco (Monitoring as Code) v1.0.1 toolset available as 'monaco' command. more info: https://github.com/dynatrace-oss/dynatrace-monitoring-as-code 
+- Dynatrace Monaco (Monitoring as Code) v1.1.0 toolset available as 'monaco' command. more info: https://github.com/dynatrace-oss/dynatrace-monitoring-as-code 
