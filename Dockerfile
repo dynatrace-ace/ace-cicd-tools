@@ -1,47 +1,55 @@
+# 
+# Builder
+# 
+FROM alpine:latest as builder
+
+ARG JMETER_VERSION="5.4.3"
+ARG HELM_VERSION="3.7.2"
+ARG KEPTN_VERSION="0.11.4"
+ARG YQ_VERSION="4.16.2"
+ARG MONACO_VERSION="1.6.0"
+ARG KUBECTL_VERSION="1.23.1"
+
+RUN apk add --update --no-cache curl
+
+# Download Keptn CLI
+RUN curl -sLO https://github.com/keptn/keptn/releases/download/${KEPTN_VERSION}/keptn-${KEPTN_VERSION}-linux-amd64.tar.gz && \
+tar -xvf keptn-${KEPTN_VERSION}-linux-amd64.tar.gz && \
+mv keptn-${KEPTN_VERSION}-linux-amd64 keptn && \
+chmod +x keptn
+
+# Download Helm CLI
+RUN curl -sLO https://get.helm.sh/helm-v${HELM_VERSION}-linux-amd64.tar.gz && \
+tar -xvf helm-v${HELM_VERSION}-linux-amd64.tar.gz && \
+mv linux-amd64/helm helm && \
+chmod +x helm
+
+# Download YQ
+RUN curl -sLO https://github.com/mikefarah/yq/releases/download/v${YQ_VERSION}/yq_linux_amd64 && \
+mv yq_linux_amd64 yq && \
+chmod +x yq
+
+# Download kubectl
+RUN curl -sLO https://dl.k8s.io/release/v${KUBECTL_VERSION}/bin/linux/amd64/kubectl && \
+chmod +x kubectl
+
+# Download JMeter
+RUN rm -rf /var/cache/apk/* && \
+curl -sLO https://archive.apache.org/dist/jmeter/binaries/apache-jmeter-${JMETER_VERSION}.tgz && \
+tar -xvf apache-jmeter-${JMETER_VERSION}.tgz && \
+mv apache-jmeter-${JMETER_VERSION} apache-jmeter
+
+# Download Monaco
+RUN curl -sLO https://github.com/dynatrace-oss/dynatrace-monitoring-as-code/releases/download/v${MONACO_VERSION}/monaco-linux-amd64 && \
+mv monaco-linux-amd64 monaco && \
+chmod +x monaco
+
+# 
+# Runner
+# 
 FROM alpine:latest
-LABEL version="1.1" maintainer="Dynatrace ACE team<ace@dynatrace.com>"
-
-
-ARG JMETER_VERSION="5.2.1"
-ARG HELM_VERSION="3.2.4"
-ARG KEPTN_VERSION="0.7.2"
-ARG YQ_VERSION="3.3.2"
-ARG MAC_VERSION="v1.1.0"
-ENV HELM_BASE_URL https://get.helm.sh
-ENV HELM_TAR_FILE helm-${HELM_VERSION}-linux-amd64.tar.gz
-ENV JMETER_HOME /opt/apache-jmeter-${JMETER_VERSION}
-ENV	JMETER_BIN	${JMETER_HOME}/bin
-ENV	JMETER_DOWNLOAD_URL  https://archive.apache.org/dist/jmeter/binaries/apache-jmeter-${JMETER_VERSION}.tgz
-ENV MAC_EXEC self-monitoring-${MAC_VERSION}
-ENV MONACO_DOWNLOAD_URL=https://github.com/dynatrace-oss/dynatrace-monitoring-as-code/releases/download/${MAC_VERSION}/monaco-linux-amd64
-
-# Installing tools and adding helm
-# RUN apk add --update --no-cache \
-#     curl \
-#     jq \
-#     ca-certificates \
-#     bash \
-#     python3 python3-dev \
-#     groff \
-#     gcc \
-#     libc-dev linux-headers libffi-dev \
-#     openssl-dev \
-#     grep \
-#     jpeg-dev \
-#     zlib-dev \
-#     freetype-dev \
-#     lcms2-dev \
-#     openjpeg-dev \
-#     tiff-dev \
-#     tk-dev \
-#     tcl-dev \
-#     harfbuzz-dev \
-#     fribidi-dev \
-#     nss \
-#     openjdk8-jre \
-#     unzip \
-#     util-linux \
-#     wget 
+LABEL version="2.2.0"
+LABEL maintainer="Dynatrace ACE team<ace@dynatrace.com>"
 
 RUN apk add --update --no-cache \
     curl \
@@ -61,36 +69,16 @@ RUN apk add --update --no-cache \
     wget \
     libc6-compat
 
-# Download and install keptn cli
-RUN curl -LO https://github.com/keptn/keptn/releases/download/${KEPTN_VERSION}/${KEPTN_VERSION}_keptn-linux.tar && \
-    tar -xvf ${KEPTN_VERSION}_keptn-linux.tar && chmod +x keptn && mv keptn /usr/bin/ 
+# Copy bins from builder
+COPY --from=builder /keptn /usr/bin/keptn
+COPY --from=builder /helm /usr/bin/helm
+COPY --from=builder /yq /usr/bin/yq
+COPY --from=builder /kubectl /usr/bin/kubectl
+COPY --from=builder /monaco /usr/bin/monaco
+COPY --from=builder /apache-jmeter /opt/apache-jmeter
 
-# Download and install helm
-RUN wget -q https://get.helm.sh/helm-v${HELM_VERSION}-linux-amd64.tar.gz -O - | tar -xzO linux-amd64/helm > /usr/local/bin/helm \
-    && chmod +x /usr/local/bin/helm
-
-# Download and install kubectl
-RUN curl -LO https://storage.googleapis.com/kubernetes-release/release/`curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt`/bin/linux/amd64/kubectl && \
-    chmod +x ./kubectl && mv ./kubectl /usr/bin/kubectl
-
-RUN curl -sL https://github.com/mikefarah/yq/releases/download/${YQ_VERSION}/yq_linux_amd64 -o /usr/bin/yq
-RUN chmod +x /usr/bin/yq
-
-# Installing Jmeter
-RUN rm -rf /var/cache/apk/* \
-    && mkdir -p /tmp/dependencies \
-    && curl -L --silent ${JMETER_DOWNLOAD_URL} >  /tmp/dependencies/apache-jmeter-${JMETER_VERSION}.tgz  \
-    && mkdir -p /opt \
-    && tar -xzf /tmp/dependencies/apache-jmeter-${JMETER_VERSION}.tgz -C /opt  \
-    && rm -rf /tmp/dependencies
-
-RUN mkdir /dynatrace
-
-#Install DT Monitoring as Code - Monaco
-RUN curl -sL ${MONACO_DOWNLOAD_URL} -o /usr/bin/monaco
-RUN chmod +x /usr/bin/monaco
-
-
+# Add JMeter bin to path
+ENV	JMETER_BIN /opt/apache-jmeter/bin
 ENV PATH $PATH:$JMETER_BIN
 
 CMD ["/bin/bash", "-l", "-c"]
