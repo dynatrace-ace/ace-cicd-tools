@@ -5,10 +5,10 @@ FROM alpine:latest as builder
 
 ARG JMETER_VERSION="5.4.3"
 ARG HELM_VERSION="3.7.2"
-ARG KEPTN_VERSION="0.11.4"
-ARG YQ_VERSION="4.16.2"
+ARG KEPTN_VERSION="0.17.0"
+ARG YQ_VERSION="4.26.1"
 ARG MONACO_VERSION="1.6.0"
-ARG KUBECTL_VERSION="1.23.1"
+ARG KUBECTL_VERSION="1.24.3"
 
 RUN apk add --update --no-cache curl
 
@@ -67,7 +67,8 @@ RUN apk add --update --no-cache \
     unzip \
     util-linux \
     wget \
-    libc6-compat
+    libc6-compat \
+    gettext
 
 # Copy bins from builder
 COPY --from=builder /keptn /usr/bin/keptn
